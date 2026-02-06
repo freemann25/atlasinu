@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinterest Clone - User Profile</title>
+    <title>Pinterest x Instagram Hybrid</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -14,46 +14,28 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
+            background-color: #fafafa; /* Instagram background */
         }
-        /* Hide scrollbar for clean look */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        /* Masonry Grid Fix */
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Masonry Grid (Pinterest Style) */
         .masonry-grid {
             column-count: 2;
             column-gap: 16px;
         }
-        @media (min-width: 768px) {
-            .masonry-grid {
-                column-count: 3;
-            }
+        @media (min-width: 768px) { .masonry-grid { column-count: 3; } }
+        @media (min-width: 1024px) { .masonry-grid { column-count: 4; } }
+        
+        .break-inside-avoid { break-inside: avoid; }
+
+        /* Story Circle Gradient (Instagram Style) */
+        .story-gradient {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            padding: 2px;
         }
-        @media (min-width: 1024px) {
-            .masonry-grid {
-                column-count: 4;
-            }
-        }
-        @media (min-width: 1280px) {
-            .masonry-grid {
-                column-count: 5;
-            }
-        }
-        .break-inside-avoid {
-            break-inside: avoid;
-        }
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .animate-fade-in-up {
-            animation: fadeIn 0.2s ease-out forwards;
-        }
+
         /* Dropdown Simple Style */
         .dropdown-menu {
             display: none;
@@ -64,286 +46,218 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border-radius: 12px;
             z-index: 100;
-            min-width: 140px;
+            min-width: 150px;
             padding: 8px 0;
         }
-        .dropdown-menu.active {
-            display: block;
+        .dropdown-menu.active { display: block; }
+
+        /* Instagram Post Style */
+        .insta-card {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            margin-bottom: 24px;
         }
     </style>
 </head>
-<body class="bg-white text-gray-900" onclick="hideAllDropdowns()">
+<body class="text-gray-900" onclick="hideAllDropdowns()">
 
-    <!-- Main Container -->
-    <div class="flex min-h-screen">
-
-        <!-- Left Sidebar (Fixed) -->
-        <aside class="w-20 fixed h-full flex flex-col items-center py-6 bg-white z-50 border-r border-transparent lg:border-none">
-            <div class="mb-8 cursor-pointer hover:bg-gray-200 p-3 rounded-full transition" onclick="closeBoard()">
-                <i class="fa-brands fa-pinterest text-red-600 text-3xl"></i>
-            </div>
-            
-            <nav class="flex flex-col gap-6 w-full items-center">
-                <a href="#" onclick="closeBoard()" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-900"><i class="fa-solid fa-house text-xl"></i></a>
-                <a href="#" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-500"><i class="fa-solid fa-magnifying-glass text-xl"></i></a>
-                <a href="#" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-500"><i class="fa-solid fa-plus text-xl"></i></a>
-                <a href="#" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-500"><i class="fa-solid fa-bell text-xl"></i></a>
-                <a href="#" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-500"><i class="fa-solid fa-comment-dots text-xl"></i></a>
-            </nav>
-
-            <div class="mt-auto">
-                 <a href="#" class="p-3 rounded-full hover:bg-gray-200 transition text-gray-500 block"><i class="fa-solid fa-gear text-xl"></i></a>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 ml-20 relative">
-            
-            <!-- Top Header -->
-            <header class="sticky top-0 bg-white z-40 py-4 px-4 flex items-center justify-between">
-                <div class="flex-1 max-w-5xl mx-auto w-full px-4">
-                    <div class="relative w-full">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
-                        </div>
-                        <input type="text" class="w-full bg-gray-100 text-gray-900 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-200 transition hover:bg-gray-200" placeholder="Search your Pins">
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden cursor-pointer hover:opacity-80">
-                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="User" class="w-full h-full object-cover">
-                    </div>
-                    <button class="p-2 rounded-full hover:bg-gray-200 text-gray-600">
-                        <i class="fa-solid fa-chevron-down text-sm"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- ================= HOME VIEW ================= -->
-            <div id="home-view" class="block">
-                <section class="flex flex-col items-center mt-4 mb-8">
-                    <div class="w-28 h-28 rounded-full overflow-hidden mb-4 border border-gray-100">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" alt="Achour" class="w-full h-full object-cover">
-                    </div>
-                    <h1 class="text-3xl font-semibold text-gray-900 mb-1">Achour</h1>
-                    <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Pinterest_Logo_2023.png" class="w-4 h-4" alt="Icon">
-                        <span>achour_design</span>
-                    </div>
-                    <div class="flex items-center gap-1 text-sm text-gray-500 mb-5">
-                        <span class="font-semibold text-black">1</span> follower · <span class="font-semibold text-black">8</span> following
-                    </div>
-                    <div class="flex gap-3">
-                        <button class="bg-gray-200 px-5 py-3 rounded-full font-semibold hover:bg-gray-300 transition">Share profile</button>
-                        <button class="bg-gray-200 px-5 py-3 rounded-full font-semibold hover:bg-gray-300 transition">Edit profile</button>
-                    </div>
-                </section>
-
-                <section class="flex justify-center gap-8 mb-6 text-base font-medium">
-                    <button class="pb-2 text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-lg transition">Pins</button>
-                    <button class="pb-2 text-gray-900 border-b-2 border-black px-4 py-2">Boards</button>
-                    <button class="pb-2 text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-lg transition">Collages</button>
-                </section>
-
-                <section class="px-4 md:px-8 mb-6 flex justify-between items-center max-w-7xl mx-auto">
-                    <div class="flex gap-3">
-                        <button class="p-2 hover:bg-gray-200 rounded-full transition"><i class="fa-solid fa-sliders text-lg"></i></button>
-                        <button class="bg-gray-200 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-300 transition">Group</button>
-                        <button class="bg-gray-200 px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-300 transition">Secret</button>
-                    </div>
-                    <div>
-                        <button onclick="openCreateBoardModal()" class="hidden sm:block bg-red-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-red-700 transition">Create</button>
-                    </div>
-                </section>
-
-                <section class="px-4 md:px-8 pb-20 max-w-7xl mx-auto">
-                    <div id="boards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8">
-                        <!-- Boards injected here -->
-                    </div>
-                </section>
-            </div>
-
-            <!-- ================= SINGLE BOARD VIEW ================= -->
-            <div id="board-view" class="hidden pb-20">
-                <section class="flex flex-col items-center pt-8 pb-10 px-4">
-                    <div class="w-full max-w-5xl flex items-center mb-6">
-                         <button onclick="closeBoard()" class="p-3 hover:bg-gray-200 rounded-full transition">
-                            <i class="fa-solid fa-arrow-left text-xl"></i>
-                         </button>
-                         <div class="flex-1"></div>
-                         <!-- Board Action -->
-                         <div class="relative">
-                            <button onclick="showDropdown(event, 'board-options-dropdown')" class="p-3 hover:bg-gray-200 rounded-full transition">
-                                <i class="fa-solid fa-ellipsis text-xl"></i>
-                            </button>
-                            <div id="board-options-dropdown" class="dropdown-menu">
-                                <button onclick="deleteCurrentBoard()" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 font-semibold">Delete board</button>
-                            </div>
-                         </div>
-                    </div>
-
-                    <h1 id="board-title" class="text-4xl font-bold text-gray-900 mb-3 text-center">Board Title</h1>
-                    
-                    <div class="flex items-center gap-2 mb-6">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="User" class="w-full h-full object-cover">
-                        </div>
-                        <span class="text-sm font-semibold">Achour</span>
-                    </div>
-
-                    <div class="flex items-center gap-1 text-sm text-gray-500 mb-8">
-                         <span id="board-count">0 Pins</span> · <span id="board-time">1d</span>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <button onclick="openAddPinModal()" class="bg-gray-200 text-black px-6 py-3 rounded-full font-bold hover:bg-gray-300 transition">
-                            <i class="fa-solid fa-plus mr-2"></i> Add Pin
-                        </button>
-                         <button class="bg-black text-white px-6 py-3 rounded-full font-bold hover:bg-gray-800 transition">
-                            Organize
-                        </button>
-                    </div>
-                </section>
-
-                <section class="px-4 md:px-8 max-w-[1600px] mx-auto">
-                    <div id="pins-container" class="masonry-grid">
-                        <!-- Pins injected here -->
-                    </div>
-                </section>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- ================= MODALS ================= -->
-
-    <!-- Add Pin Modal -->
-    <div id="add-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative animate-fade-in-up">
-            <button onclick="closeAddPinModal()" class="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Create Pin</h2>
-            <div class="space-y-4 mb-6">
-                <input type="text" id="new-pin-url" class="w-full bg-gray-100 rounded-xl p-3 outline-none" placeholder="Image URL">
-                <input type="text" id="new-pin-title" class="w-full bg-gray-100 rounded-xl p-3 outline-none" placeholder="Add a title">
-                <textarea id="new-pin-desc" class="w-full bg-gray-100 rounded-xl p-3 outline-none h-24" placeholder="Add a description"></textarea>
-                <input type="text" id="new-pin-link" class="w-full bg-gray-100 rounded-xl p-3 outline-none" placeholder="Add a link">
-            </div>
-            <button onclick="saveNewPin()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full hover:bg-red-700 transition">Save</button>
+    <!-- Side Navigation (Pinterest Style) -->
+    <aside class="w-20 fixed h-full flex flex-col items-center py-6 bg-white z-50 border-r border-gray-200">
+        <div class="mb-8 cursor-pointer hover:bg-gray-100 p-3 rounded-full transition" onclick="closeBoard()">
+            <i class="fa-brands fa-pinterest text-red-600 text-3xl"></i>
         </div>
-    </div>
+        <nav class="flex flex-col gap-8 w-full items-center">
+            <a href="#" onclick="closeBoard()" class="p-3 rounded-full hover:bg-gray-100 transition text-gray-900"><i class="fa-solid fa-house text-xl"></i></a>
+            <a href="#" class="p-3 rounded-full hover:bg-gray-100 transition text-gray-500"><i class="fa-solid fa-magnifying-glass text-xl"></i></a>
+            <a href="#" onclick="openCreateBoardModal()" class="p-3 rounded-full hover:bg-gray-100 transition text-gray-500"><i class="fa-solid fa-plus text-xl"></i></a>
+            <a href="#" class="p-3 rounded-full hover:bg-gray-100 transition text-gray-500"><i class="fa-solid fa-play text-xl"></i></a> <!-- Reels icon -->
+            <a href="#" class="p-3 rounded-full hover:bg-gray-100 transition text-gray-500"><i class="fa-solid fa-heart text-xl"></i></a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 ml-20 relative">
+        
+        <!-- Top Header -->
+        <header class="sticky top-0 bg-white z-40 py-3 px-6 flex items-center justify-between border-b border-gray-200">
+            <div class="text-2xl font-bold tracking-tighter italic">Instagram</div> <!-- Instagram Logo Text Style -->
+            <div class="flex-1 max-w-xl mx-auto px-4 hidden md:block">
+                <div class="relative w-full">
+                    <input type="text" class="w-full bg-gray-100 rounded-lg py-2 pl-10 pr-4 focus:outline-none" placeholder="Search">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-sm"></i>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <i onclick="openCreateStoryModal()" class="fa-regular fa-square-plus text-2xl cursor-pointer hover:text-gray-600 transition"></i>
+                <i class="fa-regular fa-paper-plane text-2xl cursor-pointer"></i>
+            </div>
+        </header>
+
+        <!-- ================= HOME VIEW (Pinterest Grid with Instagram Stories) ================= -->
+        <div id="home-view" class="block">
+            
+            <!-- Stories Bar (Instagram Style) -->
+            <section id="stories-container" class="flex gap-4 p-6 overflow-x-auto no-scrollbar bg-white border-b border-gray-200 mb-6">
+                <!-- User Story (Always first) -->
+                <div class="flex flex-col items-center gap-1 min-w-[80px]">
+                    <div class="w-16 h-16 rounded-full story-gradient p-[2px] cursor-pointer" onclick="openCreateStoryModal()">
+                        <div class="bg-white p-[2px] rounded-full w-full h-full relative">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" class="rounded-full w-full h-full object-cover">
+                            <div class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center border-2 border-white text-[10px]">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="text-xs">Your Story</span>
+                </div>
+                <!-- Dynamic Stories will be injected here -->
+            </section>
+
+            <!-- Boards Grid (Pinterest Style) -->
+            <section class="px-4 md:px-8 pb-20 max-w-7xl mx-auto">
+                <div id="boards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Boards injected here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= SINGLE BOARD VIEW (Instagram Feed Style) ================= -->
+        <div id="board-view" class="hidden max-w-2xl mx-auto pt-8 pb-20">
+            <div class="flex items-center justify-between mb-8 px-4">
+                <button onclick="closeBoard()" class="text-2xl"><i class="fa-solid fa-arrow-left"></i></button>
+                <h1 id="board-title" class="text-xl font-bold">Board Name</h1>
+                <div class="flex items-center gap-4">
+                    <button onclick="openCreatePinModal()" class="text-2xl hover:text-blue-500 transition"><i class="fa-solid fa-circle-plus"></i></button>
+                    <div class="relative">
+                        <button onclick="showDropdown(event, 'board-options-dropdown')"><i class="fa-solid fa-ellipsis"></i></button>
+                        <div id="board-options-dropdown" class="dropdown-menu">
+                            <button onclick="deleteCurrentBoard()" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 font-semibold">Delete board</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Container -->
+            <div id="pins-container" class="flex flex-col gap-6">
+                <!-- Instagram-style cards will be injected here -->
+            </div>
+        </div>
+
+    </main>
 
     <!-- Create Board Modal -->
     <div id="create-board-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl relative animate-fade-in-up">
-            <button onclick="closeCreateBoardModal()" class="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h2 class="text-2xl font-bold mb-6 text-center">Create Board</h2>
-            <div class="mb-6">
-                <input type="text" id="new-board-name" class="w-full bg-gray-100 rounded-2xl p-4 outline-none" placeholder='Board Name (e.g. "Travel")'>
-            </div>
-            <button onclick="saveNewBoard()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full hover:bg-red-700 transition">Create</button>
+        <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl relative">
+            <h2 class="text-xl font-bold mb-4 text-center">New Board</h2>
+            <input type="text" id="new-board-name" class="w-full bg-gray-100 rounded-lg p-3 mb-4 outline-none border border-gray-200" placeholder="Board Title">
+            <button onclick="saveNewBoard()" class="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600 transition">Create</button>
+            <button onclick="closeCreateBoardModal()" class="w-full mt-2 text-sm text-gray-500">Cancel</button>
         </div>
     </div>
 
-    <!-- Pin Detail Modal -->
-    <div id="pin-detail-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[70] hidden flex items-center justify-center p-4" onclick="closePinDetailModal(event)">
-        <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[95vh] overflow-hidden shadow-2xl relative flex flex-col md:flex-row animate-fade-in-up" onclick="event.stopPropagation()">
-            <!-- Image Section -->
-            <div class="w-full md:w-1/2 bg-black flex items-center justify-center h-64 md:h-auto">
-                <img id="detail-img" src="" class="w-full h-full object-contain md:object-cover" alt="Pin Detail">
-            </div>
-            <!-- Details Section -->
-            <div class="w-full md:w-1/2 p-8 flex flex-col overflow-y-auto">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="flex gap-4 text-2xl text-gray-700">
-                         <div class="relative">
-                            <button onclick="showDropdown(event, 'pin-options-dropdown')" class="hover:bg-gray-100 p-2 rounded-full transition"><i class="fa-solid fa-ellipsis"></i></button>
-                            <div id="pin-options-dropdown" class="dropdown-menu">
-                                <button onclick="deleteCurrentPin()" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 font-semibold">Delete pin</button>
-                            </div>
-                         </div>
-                         <button class="hover:bg-gray-100 p-2 rounded-full transition"><i class="fa-solid fa-share-nodes"></i></button>
-                    </div>
-                    <button class="bg-red-600 text-white px-6 py-3 rounded-full font-bold hover:bg-red-700 transition">Save</button>
-                </div>
-                <a id="detail-link" href="#" target="_blank" class="text-sm underline mb-2 break-all text-gray-600"></a>
-                <h1 id="detail-title" class="text-3xl font-bold text-gray-900 mb-2"></h1>
-                <p id="detail-desc" class="text-gray-700 text-base mb-6"></p>
-                <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                     <div class="flex items-center gap-3">
-                         <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden"><img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"></div>
-                         <div><p class="font-bold text-sm">Achour</p></div>
-                     </div>
-                     <button class="bg-gray-200 px-4 py-2 rounded-full font-semibold hover:bg-gray-300 transition text-sm">Follow</button>
-                </div>
-            </div>
+    <!-- Create Story Modal -->
+    <div id="create-story-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl relative">
+            <h2 class="text-xl font-bold mb-4 text-center">Add Story</h2>
+            <input type="text" id="new-story-img" class="w-full bg-gray-100 rounded-lg p-3 mb-4 outline-none border border-gray-200" placeholder="Story Image URL">
+            <input type="text" id="new-story-user" class="w-full bg-gray-100 rounded-lg p-3 mb-4 outline-none border border-gray-200" placeholder="Username">
+            <button onclick="saveNewStory()" class="w-full bg-gradient-to-tr from-yellow-400 to-purple-600 text-white font-bold py-2 rounded-lg transition">Post Story</button>
+            <button onclick="closeCreateStoryModal()" class="w-full mt-2 text-sm text-gray-500">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Create Pin Modal -->
+    <div id="create-pin-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl relative">
+            <h2 class="text-xl font-bold mb-4 text-center">New Post</h2>
+            <input type="text" id="new-pin-url" class="w-full bg-gray-100 rounded-lg p-3 mb-2 outline-none border border-gray-200" placeholder="Image URL">
+            <input type="text" id="new-pin-user" class="w-full bg-gray-100 rounded-lg p-3 mb-2 outline-none border border-gray-200" placeholder="Username">
+            <textarea id="new-pin-desc" class="w-full bg-gray-100 rounded-lg p-3 mb-4 outline-none border border-gray-200" placeholder="Description"></textarea>
+            <button onclick="saveNewPin()" class="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600 transition">Post</button>
+            <button onclick="closeCreatePinModal()" class="w-full mt-2 text-sm text-gray-500">Cancel</button>
         </div>
     </div>
 
     <script>
         let currentBoardIndex = null;
-        let currentPinIndex = null;
 
-        const boardsData = [
-            { title: "Atlas creation space", time: "6h", isLocked: false, pins: [
-                {url: "https://images.unsplash.com/photo-1501139083538-0139583c61dd?w=400", title: "Clock", desc: "Timeless piece.", link: "https://google.com"},
-                {url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400", title: "Architecture", desc: "Design inspiration.", link: "https://google.com"}
+        // Initialize Data from LocalStorage or Defaults
+        let boardsData = JSON.parse(localStorage.getItem('hybrid_boards')) || [
+            { title: "Travel Vibes ✈️", time: "2h", pins: [
+                {url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800", title: "Maldives", desc: "Clear waters and white sands.", user: "traveler_pro"},
+                {url: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800", title: "Mountain High", desc: "Exploring the peaks.", user: "nature_lover"}
             ]},
-            { title: "Beautiful Images📸", time: "6h", isLocked: false, pins: [
-                {url: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400", title: "Nature", desc: "Breath of fresh air.", link: "https://google.com"}
+            { title: "Design Portfolio", time: "5h", pins: [
+                {url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800", title: "UI Elements", desc: "Clean interfaces for 2024.", user: "designer_x"}
             ]},
-            { title: "Ai images", time: "6h", isLocked: false, pins: [
-                {url: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400", title: "Future", desc: "AI generated vision.", link: "https://google.com"}
+            { title: "Food Art 🍕", time: "1d", pins: [
+                {url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800", title: "Pizza Night", desc: "Best homemade dough recipe.", user: "chef_mario"}
             ]}
         ];
 
-        // --- Helper: Dropdowns ---
+        let storiesData = JSON.parse(localStorage.getItem('hybrid_stories')) || [
+            { user: "travel_guru", img: "https://i.pravatar.cc/100?u=1" },
+            { user: "art_daily", img: "https://i.pravatar.cc/100?u=2" },
+            { user: "tech_insider", img: "https://i.pravatar.cc/100?u=3" }
+        ];
+
+        function saveData() {
+            localStorage.setItem('hybrid_boards', JSON.stringify(boardsData));
+            localStorage.setItem('hybrid_stories', JSON.stringify(storiesData));
+        }
+
         function showDropdown(event, id) {
             event.stopPropagation();
             hideAllDropdowns();
             document.getElementById(id).classList.add('active');
         }
+
         function hideAllDropdowns() {
             document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('active'));
         }
 
-        // --- Core Functions ---
+        // --- Render Functions ---
+
+        function renderStories() {
+            const container = document.getElementById('stories-container');
+            // Keep the "Your Story" item
+            const yourStory = container.firstElementChild.outerHTML;
+            container.innerHTML = yourStory;
+
+            storiesData.forEach(story => {
+                container.innerHTML += `
+                    <div class="flex flex-col items-center gap-1 min-w-[80px]">
+                        <div class="w-16 h-16 rounded-full story-gradient p-[2px] cursor-pointer">
+                            <div class="bg-white p-[2px] rounded-full w-full h-full">
+                                <img src="${story.img}" class="rounded-full w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <span class="text-xs truncate w-full text-center">${story.user}</span>
+                    </div>
+                `;
+            });
+        }
+
         function renderBoards() {
             const grid = document.getElementById('boards-grid');
             grid.innerHTML = '';
             boardsData.forEach((board, index) => {
-                const img1 = board.pins[0]?.url || 'https://via.placeholder.com/400?text=No+Pins';
-                const img2 = board.pins[1]?.url || 'https://via.placeholder.com/200';
-                const img3 = board.pins[2]?.url || 'https://via.placeholder.com/200';
-
+                const cover = board.pins[0]?.url || 'https://via.placeholder.com/400?text=Empty+Board';
                 grid.innerHTML += `
-                    <div class="cursor-pointer group relative" onclick="openBoard(${index})">
-                        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden flex gap-0.5 mb-2 transition group-hover:opacity-90">
-                            <div class="w-2/3 h-full bg-gray-200"><img src="${img1}" class="w-full h-full object-cover"></div>
-                            <div class="w-1/3 flex flex-col gap-0.5 h-full">
-                                <div class="h-1/2 bg-gray-200"><img src="${img2}" class="w-full h-full object-cover"></div>
-                                <div class="h-1/2 bg-gray-200"><img src="${img3}" class="w-full h-full object-cover"></div>
-                            </div>
-                            <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition"></div>
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-gray-900 truncate">${board.title}</h3>
-                                <p class="text-xs text-gray-500 mt-1">${board.pins.length} Pins • ${board.time}</p>
-                            </div>
-                            <!-- Inline Board Dropdown -->
-                            <div class="relative opacity-0 group-hover:opacity-100 transition">
-                                <button onclick="showDropdown(event, 'drop-board-${index}')" class="p-1 hover:bg-gray-200 rounded-full">
-                                    <i class="fa-solid fa-ellipsis text-gray-600"></i>
-                                </button>
-                                <div id="drop-board-${index}" class="dropdown-menu">
-                                    <button onclick="deleteBoardByIndex(event, ${index})" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 text-sm font-semibold">Delete</button>
+                    <div class="cursor-pointer group relative bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200" onclick="openBoard(${index})">
+                        <img src="${cover}" class="w-full aspect-square object-cover">
+                        <div class="p-3">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-sm truncate">${board.title}</h3>
+                                <div class="relative">
+                                    <button onclick="showDropdown(event, 'drop-board-${index}')" class="text-gray-400 hover:text-black"><i class="fa-solid fa-ellipsis"></i></button>
+                                    <div id="drop-board-${index}" class="dropdown-menu">
+                                        <button onclick="deleteBoardByIndex(event, ${index})" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 text-sm font-semibold">Delete</button>
+                                    </div>
                                 </div>
                             </div>
+                            <p class="text-xs text-gray-500">${board.pins.length} Posts</p>
                         </div>
                     </div>
                 `;
@@ -354,15 +268,48 @@
             currentBoardIndex = index;
             const board = boardsData[index];
             document.getElementById('board-title').innerText = board.title;
-            document.getElementById('board-count').innerText = `${board.pins.length} Pins`;
             
             const container = document.getElementById('pins-container');
             container.innerHTML = '';
+            
+            if (board.pins.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-400"><i class="fa-solid fa-camera text-5xl mb-4 block"></i> No posts yet. Add your first Pin!</div>`;
+            }
+
             board.pins.forEach((pin, pIdx) => {
                 container.innerHTML += `
-                    <div onclick="openPinDetail(${index}, ${pIdx})" class="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden cursor-zoom-in">
-                        <img src="${pin.url}" class="w-full h-auto object-cover transform transition group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black opacity-0 group-hover:bg-opacity-20 transition"></div>
+                    <div class="insta-card border border-gray-200 shadow-sm bg-white">
+                        <!-- Post Header -->
+                        <div class="flex items-center justify-between p-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+                                    <img src="https://i.pravatar.cc/100?u=${pin.user}" class="w-full h-full object-cover">
+                                </div>
+                                <span class="font-bold text-sm">${pin.user}</span>
+                            </div>
+                            <div class="relative">
+                                <button onclick="showDropdown(event, 'pin-opt-${pIdx}')"><i class="fa-solid fa-ellipsis"></i></button>
+                                <div id="pin-opt-${pIdx}" class="dropdown-menu">
+                                    <button onclick="deletePinByIndex(event, ${pIdx})" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 font-semibold text-sm">Delete Post</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Post Image -->
+                        <img src="${pin.url}" class="w-full h-auto max-h-[600px] object-cover border-y border-gray-100">
+                        <!-- Post Actions -->
+                        <div class="p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex gap-4 text-2xl">
+                                    <i class="fa-regular fa-heart cursor-pointer hover:text-red-500 transition"></i>
+                                    <i class="fa-regular fa-comment cursor-pointer"></i>
+                                    <i class="fa-regular fa-paper-plane cursor-pointer"></i>
+                                </div>
+                                <i class="fa-regular fa-bookmark text-2xl cursor-pointer"></i>
+                            </div>
+                            <p class="text-sm font-bold mb-1">Liked by many people</p>
+                            <p class="text-sm"><span class="font-bold">${pin.user}</span> ${pin.desc}</p>
+                            <p class="text-[10px] text-gray-400 uppercase mt-2">${board.time || 'Just now'} ago</p>
+                        </div>
                     </div>
                 `;
             });
@@ -372,6 +319,8 @@
             window.scrollTo(0,0);
         }
 
+        // --- Core Logic ---
+
         function closeBoard() {
             currentBoardIndex = null;
             document.getElementById('board-view').classList.add('hidden');
@@ -379,71 +328,86 @@
             renderBoards();
         }
 
-        function openPinDetail(bIdx, pIdx) {
-            currentPinIndex = pIdx;
-            const pin = boardsData[bIdx].pins[pIdx];
-            document.getElementById('detail-img').src = pin.url;
-            document.getElementById('detail-title').innerText = pin.title;
-            document.getElementById('detail-desc').innerText = pin.desc;
-            document.getElementById('detail-link').innerText = pin.link;
-            document.getElementById('detail-link').href = pin.link;
-            document.getElementById('pin-detail-modal').classList.remove('hidden');
+        // Modals Management
+        function openCreateBoardModal() { document.getElementById('create-board-modal').classList.remove('hidden'); }
+        function closeCreateBoardModal() { document.getElementById('create-board-modal').classList.add('hidden'); }
+        
+        function openCreateStoryModal() { document.getElementById('create-story-modal').classList.remove('hidden'); }
+        function closeCreateStoryModal() { document.getElementById('create-story-modal').classList.add('hidden'); }
+
+        function openCreatePinModal() { document.getElementById('create-pin-modal').classList.remove('hidden'); }
+        function closeCreatePinModal() { document.getElementById('create-pin-modal').classList.add('hidden'); }
+
+        // Save New Items
+        function saveNewBoard() {
+            const name = document.getElementById('new-board-name').value;
+            if(name) {
+                boardsData.unshift({title: name, time: "1m", pins: []});
+                saveData();
+                renderBoards();
+                closeCreateBoardModal();
+                document.getElementById('new-board-name').value = '';
+            }
         }
 
-        function closePinDetailModal() {
-            document.getElementById('pin-detail-modal').classList.add('hidden');
+        function saveNewStory() {
+            const img = document.getElementById('new-story-img').value;
+            const user = document.getElementById('new-story-user').value;
+            if(img && user) {
+                storiesData.unshift({user: user, img: img});
+                saveData();
+                renderStories();
+                closeCreateStoryModal();
+                document.getElementById('new-story-img').value = '';
+                document.getElementById('new-story-user').value = '';
+            }
         }
 
-        // --- Delete Logic ---
+        function saveNewPin() {
+            const url = document.getElementById('new-pin-url').value;
+            const user = document.getElementById('new-pin-user').value;
+            const desc = document.getElementById('new-pin-desc').value;
+            if(url && user && currentBoardIndex !== null) {
+                boardsData[currentBoardIndex].pins.unshift({
+                    url: url,
+                    user: user,
+                    desc: desc,
+                    title: "Untitled"
+                });
+                saveData();
+                openBoard(currentBoardIndex);
+                closeCreatePinModal();
+                document.getElementById('new-pin-url').value = '';
+                document.getElementById('new-pin-user').value = '';
+                document.getElementById('new-pin-desc').value = '';
+            }
+        }
+
+        // Delete Items
         function deleteBoardByIndex(event, index) {
             event.stopPropagation();
             boardsData.splice(index, 1);
+            saveData();
             renderBoards();
         }
 
         function deleteCurrentBoard() {
             if (currentBoardIndex !== null) {
                 boardsData.splice(currentBoardIndex, 1);
+                saveData();
                 closeBoard();
             }
         }
 
-        function deleteCurrentPin() {
-            if (currentBoardIndex !== null && currentPinIndex !== null) {
-                boardsData[currentBoardIndex].pins.splice(currentPinIndex, 1);
-                closePinDetailModal();
-                openBoard(currentBoardIndex);
-            }
+        function deletePinByIndex(event, pIdx) {
+            event.stopPropagation();
+            boardsData[currentBoardIndex].pins.splice(pIdx, 1);
+            saveData();
+            openBoard(currentBoardIndex);
         }
 
-        // --- Create Logic ---
-        function openCreateBoardModal() { document.getElementById('create-board-modal').classList.remove('hidden'); }
-        function closeCreateBoardModal() { document.getElementById('create-board-modal').classList.add('hidden'); }
-        function saveNewBoard() {
-            const name = document.getElementById('new-board-name').value;
-            if(name) {
-                boardsData.unshift({title: name, time: "1m", pins: []});
-                renderBoards();
-                closeCreateBoardModal();
-            }
-        }
-
-        function openAddPinModal() { document.getElementById('add-modal').classList.remove('hidden'); }
-        function closeAddPinModal() { document.getElementById('add-modal').classList.add('hidden'); }
-        function saveNewPin() {
-            const url = document.getElementById('new-pin-url').value;
-            if(url && currentBoardIndex !== null) {
-                boardsData[currentBoardIndex].pins.unshift({
-                    url: url,
-                    title: document.getElementById('new-pin-title').value || "Untitled",
-                    desc: document.getElementById('new-pin-desc').value || "",
-                    link: document.getElementById('new-pin-link').value || "#"
-                });
-                openBoard(currentBoardIndex);
-                closeAddPinModal();
-            }
-        }
-
+        // Initial Calls
+        renderStories();
         renderBoards();
     </script>
 </body>
